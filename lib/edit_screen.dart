@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:js_util';
+import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,6 @@ class EditScreen extends StatelessWidget {
       for(int i=0;i<4;i++){
         controllers[i].text=data[i];
       }
-
       return Scaffold(
       appBar: AppBar(title: Text("Edit"),),
       body: Container(
@@ -66,7 +67,15 @@ class EditScreen extends StatelessWidget {
                     request.files.add(http.MultipartFile.fromBytes('image', list,
                         filename: 'myFile.png'));
                     var response = await request.send();
-
+                    final postResponse = await http.get(Uri.parse("https://lankavehicles.lk/api/users/$userid"));
+                    var responseData = json.decode(postResponse.body);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditScreen(
+                          firstname:controller1.text ,lastname:controller2.text,
+                          phonenumber: controller3.text,address: controller4.text,imageUrl:responseData["results"]["profileInfo"]["imagePath"] ,userid: userid,
+                          authToken: authToken,),
+                        ));
                     },
                     style:ElevatedButton.styleFrom(backgroundColor: Colors.yellow,side: BorderSide.none,
                         shape: const StadiumBorder()),
